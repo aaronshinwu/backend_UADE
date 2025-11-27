@@ -43,15 +43,7 @@ services:
     networks:
       - uade-network
 
-    command: >
-      sh -c "
-        echo 'Esperando a que MySQL este listo...' &&
-        sleep 10 &&
-        echo 'Ejecutando migraciones...' &&
-        python manage.py migrate &&
-        echo 'Iniciando servidor django...' &&
-        python manage.py runserver 0.0.0.0:8000
-      "
+    command: ["production"]
 
 volumes:
   mysql_uade_db:

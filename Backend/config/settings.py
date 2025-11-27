@@ -18,8 +18,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-from pathlib import Path
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -61,6 +59,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -138,7 +138,11 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-STATICFILES_DIRS = [BASE_DIR / 'static']
+static_dir = BASE_DIR / 'static'
+if static_dir.exists():         
+    STATICFILES_DIRS = [static_dir] 
+else:
+    STATICFILES_DIRS = []
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -168,7 +172,7 @@ CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS","").split(",")
 if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-    SECURE_SSL_REDIRECT = True
+    SECURE_SSL_REDIRECT = False
     SECURE_HSTS_SECONDS = 3600
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
@@ -207,12 +211,14 @@ LOGGING = {
         'file': {
             'class': 'logging.FileHandler',
             'formatter': 'verbose',
-            'filename': BASE_DIR / 'logs/django.log',
+            # RUTA MODIFICADA: Usando /tmp/ para evitar errores de permisos
+            'filename': '/tmp/django.log', 
         },
         'error_file': {
             'class': 'logging.FileHandler',
             'formatter': 'verbose',
-            'filename': BASE_DIR / 'logs/errors.log',
+            # RUTA MODIFICADA: Usando /tmp/ para evitar errores de permisos
+            'filename': '/tmp/errors.log', 
             'level': 'ERROR',
         },
     },
@@ -224,7 +230,7 @@ LOGGING = {
         },
         'api': {
             'handlers': ['console', 'file', 'error_file'],
-            'level': 'DEBUG',
+            'level': 'WARNING',
             'propagate': True,
         },
     },

@@ -1,18 +1,22 @@
 #PASO 1
-FROM python:3.12-alpine
+FROM python:3.12-slim
 
-#PASO 2
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONNUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
 WORKDIR /app
 
-#PASO 3: Instalar depedencias del sistema necesarioa para python - mysql - imagenes
-#apk es el gestor de paquetes de Alpine Linux
-RUN apk add --no-cache \
-    build-base \ 
-    mariadb-dev \
-    jpeg-dev \
-    zlib-dev \
-    openjpeg-dev \
-    curl 
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    build-essential \ 
+    libmariadb-dev \
+    libjpeg-dev \
+    zlib1g-dev \
+    curl \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
 
 #PASO 4
 COPY Backend/requirements.txt .
@@ -23,23 +27,26 @@ RUN pip install --no-cache-dir -r requirements.txt
 #PASO 6
 COPY Backend/ .
 
+COPY deployments/entrypoint.sh /usr/local/bin/entrypoint.sh
+
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 #PASO 7
-# RUN mkdir -p /app/media /app/logs /app/staticsfiles
+RUN mkdir -p /app/media /app/logs /app/staticsfiles
 
 # #PASO 8
-# RUN adduser -D -s /bin/sh uadeuser
+RUN useradd --create-home --shell /bin/bash appuser \
+    && chown -R appuser:appuser /app
 
-# #PASO 9 - Habilitarle permisos al usuario uadeuser
-# RUN chown -R uadeuser:uadeuser /app
-# RUN chmod -R 755 /app
 
 #PASO 10
-#USER uadeuser
+USER appuser
 
 #PASO 11
 EXPOSE 8000
 
-#PASO 12
-CMD ["python","Backend/manage.py","runserver","0.0.0.0:8000"]
+ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
 
+#PASO 12
+CMD ["production"]
 
