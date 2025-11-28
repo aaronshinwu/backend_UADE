@@ -10,12 +10,14 @@ echo "Ejecutando migraciones de base de datos..."
 python manage.py makemigrations
 python manage.py migrate --noinput
 
+# ESTA ES LA LÍNEA MODIFICADA: Ahora usa el comando estándar de Django
+echo "Creando superusuario (no interactivo)..."
+python manage.py createsuperuser --noinput
+
 echo "Recopilando archivos estaticos..."
-# collectstatic crea la carpeta 'staticfiles' dentro de Backend
 python manage.py collectstatic --noinput --clear
 
 echo "Aplicacion preparada exitosamente"
-
 
 MODE=${1}
 
