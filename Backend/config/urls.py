@@ -4,6 +4,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework.permissions import AllowAny
+from django.views.generic import RedirectView  # <-- Importar RedirectView
 
 # Configuración de la documentación automática de la API
 schema_view = get_schema_view(
@@ -23,6 +24,9 @@ urlpatterns = [
 
     # Panel de administración de Django
     path('admin/', admin.site.urls),
+
+    # Redirigir la raíz '/' al admin
+    path('', RedirectView.as_view(url='/admin/', permanent=False)),
 
     # URLs de la aplicación principal
     path('api/', include('api.urls')),
