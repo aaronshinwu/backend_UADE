@@ -1,5 +1,4 @@
 #!/bin/sh
-# Salir si hay algún error
 set -e
 
 echo "Iniciando aplicación FORMULARIO_CONTACTO_API..."
@@ -11,7 +10,7 @@ python manage.py migrate --noinput
 
 # Crear superusuario si no existe (comando custom)
 echo "Creando superusuario si no existe..."
-python manage.py create_initial_superuser
+python manage.py createinitialsuperuser
 
 # Recopilar archivos estáticos (CSS, JS, favicon, etc.)
 echo "Recopilando archivos estáticos..."
