@@ -12,8 +12,13 @@ python manage.py migrate --noinput
 
 # ESTA ES LA LÍNEA MODIFICADA: Ahora usa el comando estándar de Django
 echo "Creando superusuario (si no existe)..."
-python -c "
+python - << END
 import os
+import django
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+django.setup()
+
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -24,7 +29,7 @@ if not User.objects.filter(is_superuser=True).exists():
         email=os.getenv('DJANGO_SUPERUSER_EMAIL', 'admin@example.com'),
         password=os.getenv('DJANGO_SUPERUSER_PASSWORD', 'admin123')
     )
-"
+END
 
 echo "Recopilando archivos estaticos..."
 python manage.py collectstatic --noinput --clear
